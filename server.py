@@ -92,3 +92,17 @@ def handle_client(client_socket, addr):
         print(f"Error with client {addr}: {e}")
     finally:
         client_socket.close()
+
+def main():
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server.bind(('0.0.0.0', 9999))
+    server.listen(5)
+    print("Server started. Waiting for connections...")
+
+    while True:
+        client_sock, addr = server.accept()
+        print(f"Client {addr} connected")
+        threading.Thread(target=handle_client, args=(client_sock, addr)).start()
+
+if __name__ == "__main__":
+    main()
