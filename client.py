@@ -82,3 +82,34 @@ class QuizClient:
         self.drop_area.pack(pady=20)
 
         self.submit_btn = ttk.Button(self.frame_main, text="🚀 Gửi Đáp Án", command=self.send_answer, bootstyle="success-solid")
+        self.submit_btn.pack(pady=15)
+        
+        # Nhãn hiển thị kết quả đúng/sai
+        self.response_label = ttk.Label(self.frame_main, text="", font=("Helvetica", 16, "bold"), foreground="blue", wraplength=500) # Tăng font size, làm đậm và đổi màu cho dễ thấy
+        self.response_label.pack(pady=10)
+
+        # Thêm frame cho thống kê
+        self.stats_frame = ttk.Frame(self.frame_main)
+        self.stats_frame.pack(pady=5)
+        
+        self.score_label = ttk.Label(self.stats_frame, text="Điểm: 0", font=("Helvetica", 14, "bold"), foreground="blue")
+        self.score_label.grid(row=0, column=0, padx=10)
+        self.correct_label = ttk.Label(self.stats_frame, text="Đúng: 0", font=("Helvetica", 14, "bold"), foreground="green")
+        self.correct_label.grid(row=0, column=1, padx=10)
+        self.total_label = ttk.Label(self.stats_frame, text="Tổng: 0", font=("Helvetica", 14, "bold"), foreground="gray")
+        self.total_label.grid(row=0, column=2, padx=10)
+        self.percent_label = ttk.Label(self.stats_frame, text="Tỉ lệ: 0%", font=("Helvetica", 14, "bold"), foreground="purple")
+        self.percent_label.grid(row=0, column=3, padx=10)
+        
+        self.timer_label = ttk.Label(self.frame_main, text=f"⏰ Thời gian: {QUESTION_TIME_LIMIT}s", font=("Helvetica", 16, "bold"), foreground="orange")
+        self.timer_label.pack(pady=5)
+        
+        # Nút xem bảng xếp hạng
+        self.rank_btn = ttk.Button(self.frame_main, text="🏆 Xem Bảng Xếp Hạng", command=self.show_score_history, bootstyle="info-outline")
+        self.rank_btn.pack(pady=5)
+
+        # ---- Biến trạng thái và Buffer dữ liệu ----
+        self.data_buffer = "" # Nơi lưu trữ dữ liệu nhận được từ server
+        self.expecting_question = True # True: đang đợi câu hỏi; False: đang đợi kết quả
+        self.selected_answer = ""
+        
