@@ -112,4 +112,11 @@ class QuizClient:
         self.data_buffer = "" # Nơi lưu trữ dữ liệu nhận được từ server
         self.expecting_question = True # True: đang đợi câu hỏi; False: đang đợi kết quả
         self.selected_answer = ""
-        
+        # Đăng ký sự kiện tự động chuyển câu hỏi
+        self.master.bind("<<ContinueNextQuestion>>", self.auto_advance_question)
+
+        # Khởi động luồng nhận dữ liệu từ server
+        self.listen_thread = threading.Thread(target=self.receive_data, daemon=True)
+        self.listen_thread.start()
+
+        # Xử lý khi đóng cửa sổ
