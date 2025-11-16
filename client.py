@@ -42,3 +42,43 @@ class QuizClient:
             
             # Nếu server yêu cầu tên
             if "nhập tên" in welcome.lower():
+                name = simpledialog.askstring("Nhập tên", "Nhập tên người chơi của bạn:")
+                if not name:
+                    name = "Khách" # Mặc định nếu người dùng không nhập hoặc đóng
+                self.player_name = name  # Lưu tên người chơi
+                self.client_socket.sendall(name.encode())
+
+                # Nhận yêu cầu bắt đầu game (nhấn 0)
+                start_msg = self.client_socket.recv(1024).decode()
+                if "bắt đầu" in start_msg.lower():
+                    self.client_socket.sendall(b"0")
+        except Exception as e:
+            messagebox.showerror("Lỗi", f"Lỗi khởi tạo hoặc gửi tên/bắt đầu game: {e}")
+            self.master.destroy()
+            return
+
+        # ---- Cấu hình giao diện ----
+        self.frame_main = ttk.Frame(master, padding=20)
+        self.frame_main.pack(fill="both", expand=True)
+
+        self.title_label = ttk.Label(self.frame_main, text="🧠 Trắc Nghiệm Online", font=("Helvetica", 20, "bold"))
+        self.title_label.pack(pady=10)
+
+        self.question_label = ttk.Label(self.frame_main, text="Đang tải câu hỏi...", wraplength=550, font=("Helvetica", 14))
+        self.question_label.pack(pady=10)
+
+        self.answer_var = tk.StringVar()
+        self.answer_container = ttk.Frame(self.frame_main)
+        self.answer_container.pack(pady=10)
+
+        self.option_buttons = []
+        for i in range(4):
+            btn = ttk.Button(self.answer_container, text=f"Đáp án {i+1}", bootstyle="danger-solid", width=25)
+            btn.pack(fill="x", padx=10, pady=5)
+            self.option_buttons.append(btn)
+            btn.bind("<Button-1>", self.select_answer)
+
+        self.drop_area = ttk.Label(self.frame_main, text="⬇️ Kéo đáp án vào đây", font=("Helvetica", 14), bootstyle="warning", width=30, padding=10)
+        self.drop_area.pack(pady=20)
+
+        self.submit_btn = ttk.Button(self.frame_main, text="🚀 Gửi Đáp Án", command=self.send_answer, bootstyle="success-solid")
