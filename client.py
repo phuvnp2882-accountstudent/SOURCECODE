@@ -120,3 +120,24 @@ class QuizClient:
         self.listen_thread.start()
 
         # Xử lý khi đóng cửa sổ
+        self.master.protocol("WM_DELETE_WINDOW", self.on_close)
+
+    def select_answer(self, event):
+        """Xử lý khi người dùng chọn một đáp án."""
+        self.selected_answer = event.widget.cget("text")
+        self.drop_area.config(text=f"✅ {self.selected_answer}")
+
+    def receive_data(self):
+        """Luồng riêng biệt để nhận dữ liệu từ server."""
+        while True:
+            try:
+                chunk = self.client_socket.recv(4096).decode()
+                if not chunk:
+                    break
+                self.data_buffer += chunk
+                
+                # Gọi hàm xử lý buffer trên luồng chính của Tkinter để tránh lỗi luồng
+                self.master.after_idle(self._process_data_from_buffer)
+
+            except Exception as e:
+                break
