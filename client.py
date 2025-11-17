@@ -335,6 +335,34 @@ class QuizClient:
         percent = int((self.correct_answers / self.total_questions) * 100) if self.total_questions > 0 else 0
         self.percent_label.config(text=f"Tỉ lệ: {percent}%")
 
+    def save_score_history(self):
+        """Lưu lịch sử điểm số vào file JSON."""
+        try:
+            # Đọc lịch sử điểm số hiện tại
+            history = []
+            if os.path.exists(self.score_history_file):
+                with open(self.score_history_file, 'r', encoding='utf-8') as f:
+                    history = json.load(f)
+
+            # Thêm điểm số mới
+            new_score = {
+                "player_name": self.player_name,
+                "score": self.current_score,
+                "correct_answers": self.correct_answers,
+                "total_questions": self.total_questions,
+                "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            }
+            history.append(new_score)
+
+            # Sắp xếp theo điểm số cao nhất
+            history.sort(key=lambda x: x["score"], reverse=True)
+
+            # Lưu lại vào file
+            with open(self.score_history_file, 'w', encoding='utf-8') as f:
+                json.dump(history, f, ensure_ascii=False, indent=4)
+
+        except Exception as e:
+            pass
 
 
   
