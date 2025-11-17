@@ -287,5 +287,22 @@ def auto_advance_question(self, event=None):
     self.expecting_question = True  # Đặt lại trạng thái để _process_data_from_buffer tìm câu hỏi
     self._process_data_from_buffer()  # Kích hoạt lại việc xử lý buffer để tìm câu hỏi mới (nếu đã có trong buffer)
 
+    def disable_answer_submission(self):
+        """Vô hiệu hóa nút gửi đáp án và các lựa chọn."""
+        self.submit_btn.config(state=DISABLED)
+        for btn in self.option_buttons:
+            btn.config(state=DISABLED)
+
+    def enable_answer_submission(self):
+        """Kích hoạt lại nút gửi đáp án và các lựa chọn."""
+        self.submit_btn.config(state=NORMAL)
+        for btn in self.option_buttons:
+            btn.config(state=NORMAL)
+
+
+  
+
+
+
 
     
