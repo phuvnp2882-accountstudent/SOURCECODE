@@ -214,78 +214,78 @@ class QuizClient:
                 break # Không có gì mới để xử lý trong buffer hiện tại
             
     def parse_and_show_question(self, data):
-    """Cập nhật giao diện với câu hỏi mới và các lựa chọn."""
-    lines = data.strip().split("\n")
+        """Cập nhật giao diện với câu hỏi mới và các lựa chọn."""
+        lines = data.strip().split("\n")
     
-    question_text_lines = []
-    options = []
+        question_text_lines = []
+        options = []
     
-    # Tách câu hỏi và các lựa chọn
-    for line in lines:
-        line_strip = line.strip()
-        if line_strip.startswith(("A.", "B.", "C.", "D.")):
-            options.append(line_strip)
-        else:
-            # Đảm bảo chỉ thêm các dòng có nội dung vào phần câu hỏi
-            if line_strip:  # Không thêm dòng trống
-                question_text_lines.append(line_strip)
+        # Tách câu hỏi và các lựa chọn
+        for line in lines:
+            line_strip = line.strip()
+            if line_strip.startswith(("A.", "B.", "C.", "D.")):
+               options.append(line_strip)
+            else:
+                # Đảm bảo chỉ thêm các dòng có nội dung vào phần câu hỏi
+                if line_strip:  # Không thêm dòng trống
+                   question_text_lines.append(line_strip)
 
-    self.question_label.config(text="\n".join(question_text_lines))
+        self.question_label.config(text="\n".join(question_text_lines))
 
-    # Cập nhật nút đáp án
-    for i in range(4):
-        if i < len(options):
-            self.option_buttons[i].config(text=options[i], state=NORMAL)
-        else:
-            self.option_buttons[i].config(text=f"Đáp án {chr(65+i)}. (Trống)", state=DISABLED)
+        # Cập nhật nút đáp án
+        for i in range(4):
+            if i < len(options):
+                self.option_buttons[i].config(text=options[i], state=NORMAL)
+            else:
+                self.option_buttons[i].config(text=f"Đáp án {chr(65+i)}. (Trống)", state=DISABLED)
 
-    self.selected_answer = ""
-    self.drop_area.config(text="⬇️ Chọn đáp án của bạn")
+        self.selected_answer = ""
+        self.drop_area.config(text="⬇️ Chọn đáp án của bạn")
     
-    # Bắt đầu đếm ngược thời gian cho câu hỏi mới
-    self.start_timer()
+        # Bắt đầu đếm ngược thời gian cho câu hỏi mới
+        self.start_timer()
 
     def show_answer_result(self, message):
-    """Hiển thị thông báo đúng/sai kiểu Ai là triệu phú."""
-    self.timer_running = False
-    is_correct = "sai" not in message.lower() and "incorrect" not in message.lower()
-    self.update_score(is_correct)
-    if is_correct:
-        self.show_overlay("🎉 CHÍNH XÁC!", "#28a745")  # Xanh lá
-    else:
-        # Tách đáp án đúng nếu có
-        correct_ans = ""
-        if "Đáp án đúng là:" in message:
-            correct_ans = message.split("Đáp án đúng là:")[-1].strip()
-        self.show_overlay("❌ SAI RỒI!", "#dc3545", f"Đáp án đúng: {correct_ans}")
+        """Hiển thị thông báo đúng/sai kiểu Ai là triệu phú."""
+        self.timer_running = False
+        is_correct = "sai" not in message.lower() and "incorrect" not in message.lower()
+        self.update_score(is_correct)
+        if is_correct:
+           self.show_overlay("🎉 CHÍNH XÁC!", "#28a745")  # Xanh lá
+        else:
+            # Tách đáp án đúng nếu có
+            correct_ans = ""
+            if "Đáp án đúng là:" in message:
+                correct_ans = message.split("Đáp án đúng là:")[-1].strip()
+            self.show_overlay("❌ SAI RỒI!", "#dc3545", f"Đáp án đúng: {correct_ans}")
 
-def send_answer(self):
-    """Gửi đáp án đã chọn đến server."""
-    if not self.selected_answer:
-        messagebox.showwarning("Thông báo", "Vui lòng chọn một đáp án trước khi gửi!")
-        return
+    def send_answer(self):
+        """Gửi đáp án đã chọn đến server."""
+        if not self.selected_answer:
+            messagebox.showwarning("Thông báo", "Vui lòng chọn một đáp án trước khi gửi!")
+            return
     
-    try:
-        # Lấy ký tự đáp án (A, B, C, D) từ chuỗi đầy đủ (ví dụ "A. 3" -> "A")
-        answer_letter = self.selected_answer[0].upper()
+        try:
+            # Lấy ký tự đáp án (A, B, C, D) từ chuỗi đầy đủ (ví dụ "A. 3" -> "A")
+            answer_letter = self.selected_answer[0].upper()
         
-        self.client_socket.sendall(f"{answer_letter}\n".encode())  # Thêm \n để server dễ đọc
+            self.client_socket.sendall(f"{answer_letter}\n".encode())  # Thêm \n để server dễ đọc
         
-        self.expecting_question = False  # Đã gửi đáp án, giờ đợi kết quả từ server
-        self.disable_answer_submission()  # Vô hiệu hóa nút gửi và lựa chọn ngay lập tức
+            self.expecting_question = False  # Đã gửi đáp án, giờ đợi kết quả từ server
+            self.disable_answer_submission()  # Vô hiệu hóa nút gửi và lựa chọn ngay lập tức
 
-    except Exception as e:
-        messagebox.showerror("Lỗi", f"Gửi dữ liệu thất bại: {e}")
+        except Exception as e:
+            messagebox.showerror("Lỗi", f"Gửi dữ liệu thất bại: {e}")
 
-def auto_advance_question(self, event=None):
-    """
-    Hàm này được gọi bởi sự kiện <<ContinueNextQuestion>> sau khi hiển thị kết quả và chờ.
-    Nó sẽ kích hoạt lại quá trình xử lý buffer để hiển thị câu hỏi tiếp theo.
-    """
-    self.response_label.config(text="")  # Xóa thông báo kết quả cũ sau độ trễ
-    self.enable_answer_submission()  # Kích hoạt lại các nút và ô nhập liệu
-    self.expecting_question = True  # Đặt lại trạng thái để _process_data_from_buffer tìm câu hỏi
-    self._process_data_from_buffer()  # Kích hoạt lại việc xử lý buffer để tìm câu hỏi mới (nếu đã có trong buffer)
+    def auto_advance_question(self, event=None):
+        """
+        Hàm này được gọi bởi sự kiện <<ContinueNextQuestion>> sau khi hiển thị kết quả và chờ.
+        Nó sẽ kích hoạt lại quá trình xử lý buffer để hiển thị câu hỏi tiếp theo.
+        """
+        self.response_label.config(text="")  # Xóa thông báo kết quả cũ sau độ trễ
+        self.enable_answer_submission()  # Kích hoạt lại các nút và ô nhập liệu
+        self.expecting_question = True  # Đặt lại trạng thái để _process_data_from_buffer tìm câu hỏi
+        self._process_data_from_buffer()  # Kích hoạt lại việc xử lý buffer để tìm câu hỏi mới (nếu đã có trong buffer)
 
     def disable_answer_submission(self):
         """Vô hiệu hóa nút gửi đáp án và các lựa chọn."""
@@ -298,6 +298,43 @@ def auto_advance_question(self, event=None):
         self.submit_btn.config(state=NORMAL)
         for btn in self.option_buttons:
             btn.config(state=NORMAL)
+
+    def start_timer(self):
+    """Bắt đầu đếm ngược thời gian cho câu hỏi."""
+    self.timer_running = False  # Dừng timer cũ nếu còn
+    self.time_remaining = QUESTION_TIME_LIMIT
+    self.timer_running = True
+    self.update_timer()
+
+    def update_timer(self):
+        """Cập nhật đồng hồ đếm ngược trên UI."""
+        if self.timer_running and self.time_remaining > 0:
+           self.timer_label.config(text=f"⏰ Thời gian: {self.time_remaining}s")
+           self.time_remaining -= 1
+           self.master.after(1000, self.update_timer)
+        elif self.timer_running:
+            self.timer_running = False
+            self.time_up()
+
+    def time_up(self):
+        """Xử lý khi hết thời gian."""
+        self.show_overlay("⏰ HẾT GIỜ!", "#fd7e14")
+        self.disable_answer_submission()
+        self.master.after(2500, self.master.event_generate, "<<ContinueNextQuestion>>")
+
+    def update_score(self, is_correct):
+        """Cập nhật điểm số và thống kê trên UI."""
+        self.total_questions += 1
+        if is_correct:
+           self.correct_answers += 1
+           self.current_score += 10
+        # Cập nhật các label thống kê
+        self.score_label.config(text=f"Điểm: {self.current_score}")
+        self.correct_label.config(text=f"Đúng: {self.correct_answers}")
+        self.total_label.config(text=f"Tổng: {self.total_questions}")
+        percent = int((self.correct_answers / self.total_questions) * 100) if self.total_questions > 0 else 0
+        self.percent_label.config(text=f"Tỉ lệ: {percent}%")
+
 
 
   
