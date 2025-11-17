@@ -36,6 +36,7 @@ class QuizClient:
             self.master.destroy()
             return
 
+
         # ---- Gửi tên người chơi và tín hiệu bắt đầu ----
         try:
             welcome = self.client_socket.recv(1024).decode()
@@ -194,3 +195,20 @@ class QuizClient:
                     self.expecting_question = True # Sau khi hiển thị kết quả, chuyển sang đợi câu hỏi mới
                     self.master.after(2500, self.master.event_generate, "<<ContinueNextQuestion>>") # 2.5 giây sau overlay
                     continue # Quay lại đầu vòng lặp
+
+            # 3. Xử lý câu hỏi (chỉ khi đang đợi câu hỏi)
+            if self.expecting_question:
+                if "Câu" in self.data_buffer and "Nhập đáp án (A/B/C/D):" in self.data_buffer:
+                    question_start_idx = self.data_buffer.find("Câu")
+                    question_end_idx = self.data_buffer.find("Nhập đáp án (A/B/C/D):") + len("Nhập đáp án (A/B/C/D):")
+                    
+                    if question_start_idx != -1 and question_end_idx != -1 and question_end_idx > question_start_idx:
+                        question_block = self.data_buffer[question_start_idx:question_end_idx].strip()
+                        self.master.after(0, self.parse_and_show_question, question_block)
+                        self.data_buffer = self.data_buffer[question_end_idx:].strip() # Cắt bỏ phần câu hỏi đã xử lý
+                        self.expecting_question = False # Đã nhận câu hỏi, giờ đợi đáp án
+                        continue # Quay lại đầu vòng lặp để kiểm tra xem có kết quả hoặc thông báo khác ngay sau câu hỏi không
+            
+            # Nếu không có gì được xử lý trong vòng lặp này, thoát ra để chờ thêm dữ liệu
+            if len(self.data_buffer) == original_buffer_len_in_loop:
+                break # Không có gì mới để xử lý trong buffer hiện tại
