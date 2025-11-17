@@ -244,3 +244,48 @@ class QuizClient:
     
     # Bắt đầu đếm ngược thời gian cho câu hỏi mới
     self.start_timer()
+
+    def show_answer_result(self, message):
+    """Hiển thị thông báo đúng/sai kiểu Ai là triệu phú."""
+    self.timer_running = False
+    is_correct = "sai" not in message.lower() and "incorrect" not in message.lower()
+    self.update_score(is_correct)
+    if is_correct:
+        self.show_overlay("🎉 CHÍNH XÁC!", "#28a745")  # Xanh lá
+    else:
+        # Tách đáp án đúng nếu có
+        correct_ans = ""
+        if "Đáp án đúng là:" in message:
+            correct_ans = message.split("Đáp án đúng là:")[-1].strip()
+        self.show_overlay("❌ SAI RỒI!", "#dc3545", f"Đáp án đúng: {correct_ans}")
+
+def send_answer(self):
+    """Gửi đáp án đã chọn đến server."""
+    if not self.selected_answer:
+        messagebox.showwarning("Thông báo", "Vui lòng chọn một đáp án trước khi gửi!")
+        return
+    
+    try:
+        # Lấy ký tự đáp án (A, B, C, D) từ chuỗi đầy đủ (ví dụ "A. 3" -> "A")
+        answer_letter = self.selected_answer[0].upper()
+        
+        self.client_socket.sendall(f"{answer_letter}\n".encode())  # Thêm \n để server dễ đọc
+        
+        self.expecting_question = False  # Đã gửi đáp án, giờ đợi kết quả từ server
+        self.disable_answer_submission()  # Vô hiệu hóa nút gửi và lựa chọn ngay lập tức
+
+    except Exception as e:
+        messagebox.showerror("Lỗi", f"Gửi dữ liệu thất bại: {e}")
+
+def auto_advance_question(self, event=None):
+    """
+    Hàm này được gọi bởi sự kiện <<ContinueNextQuestion>> sau khi hiển thị kết quả và chờ.
+    Nó sẽ kích hoạt lại quá trình xử lý buffer để hiển thị câu hỏi tiếp theo.
+    """
+    self.response_label.config(text="")  # Xóa thông báo kết quả cũ sau độ trễ
+    self.enable_answer_submission()  # Kích hoạt lại các nút và ô nhập liệu
+    self.expecting_question = True  # Đặt lại trạng thái để _process_data_from_buffer tìm câu hỏi
+    self._process_data_from_buffer()  # Kích hoạt lại việc xử lý buffer để tìm câu hỏi mới (nếu đã có trong buffer)
+
+
+    
