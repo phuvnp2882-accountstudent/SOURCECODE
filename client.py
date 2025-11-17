@@ -141,3 +141,56 @@ class QuizClient:
 
             except Exception as e:
                 break
+
+        # Xử lý phần còn lại của buffer khi kết nối đóng (nếu có)
+        if self.data_buffer:
+            self.master.after_idle(self._process_data_from_buffer)
+
+    def _process_data_from_buffer(self):
+        """
+        Hàm này được gọi liên tục trên luồng chính của Tkinter để phân tích
+        và xử lý dữ liệu trong self.data_buffer.
+        """
+        
+        # Vòng lặp để xử lý nhiều thông điệp trong cùng một buffer (nếu có)
+        while True:
+            original_buffer_len_in_loop = len(self.data_buffer) # Kích thước buffer trước khi xử lý trong vòng lặp này
+
+            # 1. Ưu tiên tìm kết quả cuối cùng (kết thúc game)
+            if "Trò chơi kết thúc!" in self.data_buffer:
+                final_start_idx = self.data_buffer.find("Trò chơi kết thúc!")
+                final_message = self.data_buffer[final_start_idx:].strip()
+                self.master.after(0, self.show_final_result_overlay, final_message)
+                self.data_buffer = "" # Xóa buffer
+                return # Thoát khỏi hàm và vòng lặp
+
+            # 2. Xử lý kết quả đáp án (chỉ khi đang đợi kết quả, tức là vừa gửi đáp án)
+            if not self.expecting_question:
+                if "Đáp án đúng!" in self.data_buffer:
+                    idx = self.data_buffer.find("Đáp án đúng!")
+                    # Tìm điểm kết thúc của thông báo (thường là \n\n)
+                    end_idx = self.data_buffer.find("\n\n", idx)
+                    if end_idx == -1: # Trường hợp thông báo bị cắt
+                        end_idx = len(self.data_buffer)
+                    
+                    message = self.data_buffer[idx:end_idx].strip()
+                    self.master.after(0, self.show_answer_result, message)
+                    self.master.after(0, self.disable_answer_submission) # Vô hiệu hóa nút gửi
+                    self.data_buffer = self.data_buffer[end_idx:].strip() # Cắt bỏ phần đã xử lý
+                    self.expecting_question = True # Sau khi hiển thị kết quả, chuyển sang đợi câu hỏi mới
+                    self.master.after(2500, self.master.event_generate, "<<ContinueNextQuestion>>") # 2.5 giây sau overlay
+                    continue # Quay lại đầu vòng lặp để kiểm tra xem có câu hỏi tiếp theo ngay lập tức trong buffer không
+
+                elif "Đáp án sai!" in self.data_buffer:
+                    idx = self.data_buffer.find("Đáp án sai!")
+                    end_idx = self.data_buffer.find("\n\n", idx)
+                    if end_idx == -1:
+                        end_idx = len(self.data_buffer)
+                    
+                    message = self.data_buffer[idx:end_idx].strip()
+                    self.master.after(0, self.show_answer_result, message)
+                    self.master.after(0, self.disable_answer_submission) # Vô hiệu hóa nút gửi
+                    self.data_buffer = self.data_buffer[end_idx:].strip() # Cắt bỏ phần đã xử lý
+                    self.expecting_question = True # Sau khi hiển thị kết quả, chuyển sang đợi câu hỏi mới
+                    self.master.after(2500, self.master.event_generate, "<<ContinueNextQuestion>>") # 2.5 giây sau overlay
+                    continue # Quay lại đầu vòng lặp
