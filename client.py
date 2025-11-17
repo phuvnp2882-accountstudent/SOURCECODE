@@ -212,3 +212,35 @@ class QuizClient:
             # Nếu không có gì được xử lý trong vòng lặp này, thoát ra để chờ thêm dữ liệu
             if len(self.data_buffer) == original_buffer_len_in_loop:
                 break # Không có gì mới để xử lý trong buffer hiện tại
+            
+    def parse_and_show_question(self, data):
+    """Cập nhật giao diện với câu hỏi mới và các lựa chọn."""
+    lines = data.strip().split("\n")
+    
+    question_text_lines = []
+    options = []
+    
+    # Tách câu hỏi và các lựa chọn
+    for line in lines:
+        line_strip = line.strip()
+        if line_strip.startswith(("A.", "B.", "C.", "D.")):
+            options.append(line_strip)
+        else:
+            # Đảm bảo chỉ thêm các dòng có nội dung vào phần câu hỏi
+            if line_strip:  # Không thêm dòng trống
+                question_text_lines.append(line_strip)
+
+    self.question_label.config(text="\n".join(question_text_lines))
+
+    # Cập nhật nút đáp án
+    for i in range(4):
+        if i < len(options):
+            self.option_buttons[i].config(text=options[i], state=NORMAL)
+        else:
+            self.option_buttons[i].config(text=f"Đáp án {chr(65+i)}. (Trống)", state=DISABLED)
+
+    self.selected_answer = ""
+    self.drop_area.config(text="⬇️ Chọn đáp án của bạn")
+    
+    # Bắt đầu đếm ngược thời gian cho câu hỏi mới
+    self.start_timer()
