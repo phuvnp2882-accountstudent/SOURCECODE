@@ -458,6 +458,10 @@ class QuizClient:
         # Sau 20s, tự động đóng app
         self.master.after(20000, self.master.destroy)
 
+if __name__ == "__main__":
+    app = ttk.Window(themename="morph")
+    QuizClient(app)
+    app.mainloop()
 
 
 
