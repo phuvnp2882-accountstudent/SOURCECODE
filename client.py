@@ -417,6 +417,46 @@ class QuizClient:
             pass
         self.master.destroy()
   
+    def show_overlay(self, message, color, sub_message=""):
+        # Nếu đã có overlay thì xóa trước
+        if hasattr(self, 'overlay_frame') and self.overlay_frame.winfo_exists():
+            self.overlay_frame.destroy()
+        self.overlay_frame = tk.Frame(self.master, bg=color, width=600, height=600)
+        self.overlay_frame.place(relx=0, rely=0, relwidth=1, relheight=1)
+        label = tk.Label(self.overlay_frame, text=message, font=("Helvetica", 32, "bold"), fg="white", bg=color)
+        label.pack(expand=True)
+        if sub_message:
+            sub_label = tk.Label(self.overlay_frame, text=sub_message, font=("Helvetica", 18), fg="white", bg=color)
+            sub_label.pack()
+        # Tự động ẩn overlay sau 2.5 giây
+        self.master.after(2500, self.overlay_frame.destroy)
+
+    def show_final_result_overlay(self, final_message):
+        # Tính toán thống kê
+        total = self.total_questions
+        correct = self.correct_answers
+        wrong = total - correct
+        percent = int((correct / total) * 100) if total > 0 else 0
+        msg = f"🎉 KẾT THÚC TRÒ CHƠI!\n\n{final_message}\n" \
+              f"Điểm: {self.current_score}\n" \
+              f"Đúng: {correct}\n" \
+              f"Sai: {wrong}\n" \
+              f"Tỉ lệ đúng: {percent}%"
+        # Overlay kết quả cuối cùng (cỡ chữ vừa, căn giữa)
+        if hasattr(self, 'overlay_frame') and self.overlay_frame.winfo_exists():
+            self.overlay_frame.destroy()
+        self.overlay_frame = tk.Frame(self.master, bg="#007bff", width=600, height=600)
+        self.overlay_frame.place(relx=0, rely=0, relwidth=1, relheight=1)
+        label = tk.Label(self.overlay_frame, text="🎉 KẾT THÚC TRÒ CHƠI!", font=("Helvetica", 24, "bold"), fg="white", bg="#007bff")
+        label.pack(pady=(80, 10))
+        content = tk.Label(self.overlay_frame, text=f"{final_message}\n\nĐiểm: {self.current_score}\nĐúng: {correct}\nSai: {wrong}\nTỉ lệ đúng: {percent}%", font=("Helvetica", 14), fg="white", bg="#007bff", justify="center")
+        content.pack(pady=10)
+        # Lưu điểm số vào file JSON trước khi hiện bảng xếp hạng
+        self.save_score_history()
+        # Sau 20s, hiện bảng xếp hạng
+        self.master.after(20000, self.show_score_history)
+        # Sau 20s, tự động đóng app
+        self.master.after(20000, self.master.destroy)
 
 
 
