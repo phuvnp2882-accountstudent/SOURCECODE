@@ -404,6 +404,18 @@ class QuizClient:
         except Exception as e:
             pass
 
+    def on_close(self):
+        """Xử lý khi cửa sổ client đóng."""
+        try:
+            # Lưu điểm số trước khi đóng
+            if self.total_questions > 0:
+                self.save_score_history()
+                self.show_score_history()
+            
+            self.client_socket.close()
+        except Exception as e:
+            pass
+        self.master.destroy()
   
 
 
