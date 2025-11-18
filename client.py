@@ -364,6 +364,45 @@ class QuizClient:
         except Exception as e:
             pass
 
+    def show_score_history(self):
+        """Hiển thị lịch sử điểm số."""
+        try:
+            if not os.path.exists(self.score_history_file):
+                messagebox.showinfo("Lịch sử điểm số", "Chưa có lịch sử điểm số!")
+                return
+
+            with open(self.score_history_file, 'r', encoding='utf-8') as f:
+                history = json.load(f)
+
+            # Tạo cửa sổ mới để hiển thị lịch sử
+            history_window = ttk.Toplevel(self.master)
+            history_window.title("Lịch sử điểm số")
+            history_window.geometry("400x500")
+
+            # Tạo frame với scrollbar
+            frame = ttk.Frame(history_window)
+            frame.pack(fill="both", expand=True, padx=10, pady=10)
+
+            # Tạo text widget với scrollbar
+            text_widget = tk.Text(frame, wrap=tk.WORD, width=40, height=20)
+            scrollbar = ttk.Scrollbar(frame, orient="vertical", command=text_widget.yview)
+            text_widget.configure(yscrollcommand=scrollbar.set)
+
+            # Pack widgets
+            scrollbar.pack(side="right", fill="y")
+            text_widget.pack(side="left", fill="both", expand=True)
+
+            # Hiển thị lịch sử
+            text_widget.insert("end", "=== BẢNG XẾP HẠNG ===\n\n")
+            for i, score in enumerate(history[:10], 1):  # Chỉ hiển thị top 10
+                text_widget.insert("end", f"{i}. {score['player_name']}\n")
+                text_widget.insert("end", f"   Điểm: {score['score']} ({score['correct_answers']}/{score['total_questions']})\n")
+                text_widget.insert("end", f"   Ngày: {score['date']}\n\n")
+
+            text_widget.config(state="disabled")  # Không cho phép chỉnh sửa
+
+        except Exception as e:
+            pass
 
   
 
