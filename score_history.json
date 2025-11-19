@@ -1,0 +1,107 @@
+[
+    {
+        "player_name": "Phu",
+        "score": 100,
+        "correct_answers": 10,
+        "total_questions": 10,
+        "date": "2025-07-01 18:02:23"
+    },
+    {
+        "player_name": "Gia Ngan",
+        "score": 90,
+        "correct_answers": 9,
+        "total_questions": 10,
+        "date": "2025-06-27 18:59:36"
+    },
+    {
+        "player_name": "Phuc",
+        "score": 90,
+        "correct_answers": 9,
+        "total_questions": 10,
+        "date": "2025-11-15 21:31:26"
+    },
+    {
+        "player_name": "Phuc Thu Hai",
+        "score": 90,
+        "correct_answers": 9,
+        "total_questions": 10,
+        "date": "2025-11-15 21:31:35"
+    },
+    {
+        "player_name": "Phu",
+        "score": 70,
+        "correct_answers": 7,
+        "total_questions": 10,
+        "date": "2025-07-01 17:54:36"
+    },
+    {
+        "player_name": "Giang",
+        "score": 60,
+        "correct_answers": 6,
+        "total_questions": 9,
+        "date": "2025-06-18 09:52:40"
+    },
+    {
+        "player_name": "Vy",
+        "score": 50,
+        "correct_answers": 5,
+        "total_questions": 10,
+        "date": "2025-06-18 09:49:41"
+    },
+    {
+        "player_name": "Vy Thu Hai",
+        "score": 50,
+        "correct_answers": 5,
+        "total_questions": 10,
+        "date": "2025-06-18 10:00:13"
+    },
+    {
+        "player_name": "Quan",
+        "score": 50,
+        "correct_answers": 5,
+        "total_questions": 9,
+        "date": "2025-11-15 21:57:17"
+    },
+    {
+        "player_name": "Thinh",
+        "score": 50,
+        "correct_answers": 5,
+        "total_questions": 9,
+        "date": "2025-11-15 21:57:46"
+    },
+    {
+        "player_name": "Anh",
+        "score": 50,
+        "correct_answers": 5,
+        "total_questions": 9,
+        "date": "2025-11-20 00:47:58"
+    },
+    {
+        "player_name": "Cuong",
+        "score": 40,
+        "correct_answers": 4,
+        "total_questions": 6,
+        "date": "2025-11-15 01:26:14"
+    },
+    {
+        "player_name": "Trinh",
+        "score": 40,
+        "correct_answers": 4,
+        "total_questions": 6,
+        "date": "2025-11-15 01:26:26"
+    },
+    {
+        "player_name": "Le",
+        "score": 30,
+        "correct_answers": 3,
+        "total_questions": 8,
+        "date": "2025-11-15 03:03:43"
+    },
+    {
+        "player_name": "Lieu",
+        "score": 30,
+        "correct_answers": 3,
+        "total_questions": 8,
+        "date": "2025-11-15 03:03:53"
+    }
+]
